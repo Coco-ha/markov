@@ -1,5 +1,6 @@
-/** Textual markov chain generator. */
+"use strict";
 
+/** Textual markov chain generator. */
 
 class MarkovMachine {
 
@@ -10,6 +11,7 @@ class MarkovMachine {
     // include things like "The", "cat", "cat.".
     this.words = text.split(/[ \r\n]+/);
     this.chains = this.getChains();
+    this.text = this.getText();
   }
 
   /** Get markov chain: returns object of Markov chains.
@@ -27,32 +29,27 @@ class MarkovMachine {
    * */
 
   getChains() {
-    // TODO: implement this!
     let chains = {};
 
     for (let i = 0; i < this.words.length; i++) {
 
-      const word = this.words[i];
-      const nextWord = this.words[i + 1];
-
-      if (!(chains.hasOwnProperty(word))) {
-        chains[word] = [];
+      const currWord = this.words[i];
+      const nextIdx = i + 1;
+      const nextWord = this.words[nextIdx];
+      //forEach?
+      //TODO: can just check for undefined
+      if (!(chains.hasOwnProperty(currWord))) {
+        chains[currWord] = [];
       }
 
-      if (!(chains[word].includes(chains[nextWord]))) {
-        if (nextWord > this.words.length) {
-
-          chains[word].push(nextWord);
-        } else {
-
-          chains[word].push(null);
-          break;
-        }
+      if (nextWord !== undefined) {
+        chains[currWord].push(nextWord);
+      } else {
+        chains[currWord].push(null);
       }
-
     }
 
-    console.log(chains);
+    return chains;
   }
 
 
@@ -60,11 +57,34 @@ class MarkovMachine {
    *  until it hits a null choice. */
 
   getText() {
-    // TODO: implement this!
-
-    // - start at the first word in the input text
-    // - find a random word from the following-words of that
-    // - repeat until reaching the terminal null
+    //TODO: slice/remove null
+    // console.log("Story so far:", story);
+    //start with The
+    //iterate through values assigned to chains[The] and choose one
+    //iterate through values assigned to that key in chains and choose one etc.
+    //once null is reached, break and return story
+    // chains = {
+    //   The: [ 'cat', 'hat' ],
+    //   cat: [ 'is' ],
+    //   is: [ 'in', 'the', 'a' ],
+    //   in: [ 'the' ],
+    //   the: [ 'hat.', 'cat.' ],
+    //   'hat.': [ 'The' ],
+    //   'cat.': [ 'The', null ],
+    //   hat: [ 'is' ],
+    //   a: [ 'cat.' ]
+    // }
+    let text = "" + this.words[0];
+    //TODO: text as array -> join without null
+    let word = this.words[0];
+    while (word !== null) {
+      let randIdx = Math.floor((Math.random()) * this.chains[word].length);
+      // console.log("word: ", word, "randIdx: ", randIdx);
+      text += (` ${this.chains[word][randIdx]}`);
+      word = this.chains[word][randIdx];
+    }
+    // console.log(story);
+    return text;
   }
 }
 
